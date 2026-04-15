@@ -495,7 +495,7 @@ a {
 .system-event {
   position: absolute;
   left: 50%;
-  top: 64%;
+  top: 72%;
   width: min(520px, calc(100% - 96px));
   transform: translate(-50%, -50%);
   text-align: center;
@@ -553,29 +553,33 @@ a {
   position: absolute;
   left: 50%;
   top: 164px;
-  width: min(760px, calc(100% - 120px));
+  width: fit-content;
+  max-width: calc(100% - 120px);
   transform: translateX(-50%);
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(150px, 210px));
+  justify-content: center;
+  gap: 16px;
   z-index: 3;
 }
 
 .deploy-track {
   position: absolute;
   left: 50%;
-  top: 366px;
-  width: min(780px, calc(100% - 180px));
+  top: calc(50% - 28px);
+  width: fit-content;
+  max-width: calc(100% - 120px);
   transform: translateX(-50%);
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(4, 170px);
+  justify-content: center;
+  gap: 24px;
   z-index: 3;
   pointer-events: none;
 }
 
 .deploy-anchor {
-  height: 56px;
+  height: 40px;
 }
 
 .start-screen {
@@ -1176,13 +1180,17 @@ a {
   .sequence-track {
     top: 146px;
     width: calc(100% - 44px);
+    max-width: none;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
   }
 
   .deploy-track {
-    top: 332px;
+    top: calc(50% - 18px);
     width: calc(100% - 56px);
-    gap: 14px;
+    max-width: none;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
   }
 
   .lane,
@@ -1259,7 +1267,7 @@ a {
 
   .deploy-track {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    top: 314px;
+    top: calc(50% + 10px);
   }
 
   .player-card h1,
