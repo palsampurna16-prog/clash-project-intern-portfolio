@@ -495,7 +495,7 @@ a {
 .system-event {
   position: absolute;
   left: 50%;
-  top: 56%;
+  top: 64%;
   width: min(520px, calc(100% - 96px));
   transform: translate(-50%, -50%);
   text-align: center;
@@ -559,6 +559,70 @@ a {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   z-index: 3;
+}
+
+.deploy-track {
+  position: absolute;
+  left: 50%;
+  top: 366px;
+  width: min(780px, calc(100% - 180px));
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 30px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.deploy-anchor {
+  height: 56px;
+}
+
+.start-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, rgba(11, 24, 18, 0.18), rgba(11, 24, 18, 0.32));
+  transition: opacity 220ms ease, visibility 220ms ease;
+}
+
+.start-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.play-game-button {
+  min-width: 220px;
+  min-height: 74px;
+  padding: 18px 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 219, 110, 0.42);
+  background:
+    linear-gradient(180deg, rgba(255, 214, 93, 0.32), rgba(255, 150, 72, 0.22)),
+    rgba(17, 32, 36, 0.78);
+  color: var(--text);
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgba(255, 216, 109, 0.18),
+    0 20px 40px rgba(0, 0, 0, 0.24);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.play-game-button:hover,
+.play-game-button:focus-visible {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow:
+    0 0 0 1px rgba(255, 216, 109, 0.24),
+    0 24px 46px rgba(0, 0, 0, 0.28);
 }
 
 .sequence-slot {
@@ -626,7 +690,7 @@ a {
   position: absolute;
   left: 50%;
   bottom: 82px;
-  width: 104px;
+  width: 128px;
   min-height: 52px;
   border-radius: 8px;
   transform: translateX(-50%) scale(0.7);
@@ -1115,6 +1179,12 @@ a {
     gap: 8px;
   }
 
+  .deploy-track {
+    top: 332px;
+    width: calc(100% - 56px);
+    gap: 14px;
+  }
+
   .lane,
   .river {
     width: calc(100% - 56px);
@@ -1144,7 +1214,7 @@ a {
   }
 
   .system-event {
-    top: 60%;
+    top: 68%;
     width: calc(100% - 26px);
     padding: 14px 16px;
   }
@@ -1155,9 +1225,15 @@ a {
   }
 
   .deploy-token {
-    width: 86px;
+    width: 78px;
     min-height: 44px;
     font-size: 0.55rem;
+  }
+
+  .play-game-button {
+    min-width: 180px;
+    min-height: 62px;
+    font-size: 1.45rem;
   }
 }
 
@@ -1179,6 +1255,11 @@ a {
   .sequence-track {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     top: 138px;
+  }
+
+  .deploy-track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    top: 314px;
   }
 
   .player-card h1,

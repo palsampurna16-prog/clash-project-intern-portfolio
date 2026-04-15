@@ -30,7 +30,6 @@ const cards = {
 };
 
 const sequence = ["track", "team", "dashboard", "resolve"];
-const deployedTokenDrop = 96;
 const baselineMetrics = {
   visibility: 54,
   alignment: 54,
@@ -39,6 +38,7 @@ const baselineMetrics = {
 };
 
 const state = {
+  started: false,
   progressIndex: 0,
   deployed: [],
   blockers: [],
@@ -68,7 +68,10 @@ const elements = {
   arenaStage: document.getElementById("arenaStage"),
   arenaBoard: document.querySelector(".arena-board"),
   resetButton: document.getElementById("resetButton"),
+  playButton: document.getElementById("playButton"),
+  startScreen: document.getElementById("startScreen"),
   sequenceSlots: [...document.querySelectorAll(".sequence-slot")],
+  deployAnchors: [...document.querySelectorAll(".deploy-anchor")],
 };
 
 function clamp(value, min, max) {
@@ -113,6 +116,9 @@ function getStatusScore(metrics) {
 }
 
 function getStatusLabel(score) {
+  if (!state.started) {
+    return "Standby";
+  }
   if (state.won) {
     return "Stable";
   }
@@ -164,19 +170,16 @@ function renderSequenceTrack(failedStep = null) {
   });
 }
 
-function getSlotTarget(stepIndex) {
-  const slot = elements.sequenceSlots[stepIndex];
+function getDeployTarget(stepIndex) {
+  const anchor = elements.deployAnchors[stepIndex];
   const overlayRect = elements.arenaOverlay.getBoundingClientRect();
-  const slotRect = slot.getBoundingClientRect();
+  const anchorRect = anchor.getBoundingClientRect();
   const startX = overlayRect.width / 2;
   const startY = overlayRect.height - 126;
-  const targetX = slotRect.left - overlayRect.left + slotRect.width / 2 - startX;
+  const targetX =
+    anchorRect.left - overlayRect.left + anchorRect.width / 2 - startX;
   const targetY =
-    slotRect.top -
-    overlayRect.top +
-    slotRect.height / 2 +
-    deployedTokenDrop -
-    startY;
+    anchorRect.top - overlayRect.top + anchorRect.height / 2 - startY;
   return { x: targetX, y: targetY };
 }
 
@@ -185,7 +188,7 @@ function createDeployToken(cardId, variant, stepIndex) {
   const token = document.createElement("div");
   const isCorrect = variant === "good";
   const target =
-    stepIndex != null ? getSlotTarget(stepIndex) : { x: 0, y: -210 };
+    stepIndex != null ? getDeployTarget(stepIndex) : { x: 0, y: -210 };
 
   token.className = `deploy-token ${variant}`;
   token.style.setProperty("--target-x", `${target.x}px`);
@@ -285,12 +288,16 @@ function updateHud() {
   elements.cards.forEach((button) => {
     const cardId = button.dataset.card;
     const isPlaced = state.deployed.includes(cardId);
-    button.disabled = state.locked || state.won || isPlaced;
+    button.disabled = !state.started || state.locked || state.won || isPlaced;
     button.classList.toggle("spent", isPlaced);
-    button.classList.toggle("locked", state.locked || state.won || isPlaced);
-    button.classList.toggle("next-step", cardId === expectedCard && !state.won && !state.locked);
+    button.classList.toggle("locked", !state.started || state.locked || state.won || isPlaced);
+    button.classList.toggle(
+      "next-step",
+      cardId === expectedCard && state.started && !state.won && !state.locked
+    );
   });
 
+  elements.startScreen.classList.toggle("hidden", state.started);
   renderSequenceTrack(state.failedStep);
 }
 
@@ -401,7 +408,7 @@ function handleWrongCard(cardId) {
 }
 
 function deployCard(cardId) {
-  if (state.locked || state.won) {
+  if (!state.started || state.locked || state.won) {
     return;
   }
 
@@ -414,9 +421,20 @@ function deployCard(cardId) {
   handleWrongCard(cardId);
 }
 
+function startGame() {
+  state.started = true;
+  clearDeployedTokens();
+  clearBlockers(true);
+  setEvent("Ready to deploy", "Deploy actions to maintain system stability.");
+  elements.comboHint.textContent = "Deploy actions to maintain system stability.";
+  addLog("Game started", "Play the cards in order to keep the live system stable.");
+  updateHud();
+}
+
 function resetMatch() {
   clearTimer("feedbackTimer");
   clearTimer("resetTimer");
+  state.started = false;
   state.progressIndex = 0;
   state.deployed = [];
   state.logEntries = [];
@@ -427,11 +445,11 @@ function resetMatch() {
   clearBlockers(true);
   elements.arenaStage.classList.remove("feedback-success", "feedback-error", "match-won");
   elements.arenaBoard.classList.remove("shake", "victory");
-  setEvent("Ready to deploy", "Deploy actions to maintain system stability.");
-  elements.comboHint.textContent = "Deploy actions to maintain system stability.";
+  setEvent("Play game", "Click PLAY GAME to begin the match.");
+  elements.comboHint.textContent = "Click PLAY GAME to start the match.";
   addLog(
-    "Match started",
-    "Build the sequence in order. Incorrect sequence introduces blockers."
+    "Match ready",
+    "Click PLAY GAME, then build the sequence in order."
   );
   updateHud();
 }
@@ -440,6 +458,7 @@ elements.cards.forEach((button) => {
   button.addEventListener("click", () => deployCard(button.dataset.card));
 });
 
+elements.playButton.addEventListener("click", startGame);
 elements.resetButton.addEventListener("click", resetMatch);
 
 resetMatch();
