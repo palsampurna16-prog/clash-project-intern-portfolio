@@ -48,6 +48,14 @@
               <span>Efficiency</span>
               <strong id="efficiencyValue">64</strong>
             </div>
+            <div>
+              <span>Score</span>
+              <strong id="scoreValue">0</strong>
+            </div>
+            <div>
+              <span>Streak</span>
+              <strong id="streakValue">0</strong>
+            </div>
           </div>
         </div>
       </header>
@@ -152,6 +160,10 @@
               </div>
 
               <div class="start-screen" id="startScreen">
+                <div class="start-copy">
+                  <div class="start-kicker">Three live incidents</div>
+                  <p>Stabilize every round before the clock burns down.</p>
+                </div>
                 <button class="play-game-button" id="playButton" type="button">
                   Play Game
                 </button>
@@ -173,6 +185,30 @@
             <p id="comboHint">
               Deploy actions to maintain system stability.
             </p>
+            <div class="timer-panel">
+              <div class="timer-info">
+                <span>Incident Clock</span>
+                <strong id="timerValue">30s</strong>
+              </div>
+              <div class="timer-track">
+                <div class="timer-fill" id="timerFill"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="intel-panel hud-panel">
+            <div class="intel-card">
+              <span>Current Incident</span>
+              <strong id="scenarioTitle">Standby</strong>
+            </div>
+            <div class="intel-card">
+              <span>Round</span>
+              <strong id="roundValue">0/3</strong>
+            </div>
+            <div class="intel-card">
+              <span>Pressure</span>
+              <strong id="pressureValue">Low</strong>
+            </div>
           </section>
 
           <section class="deck-panel">

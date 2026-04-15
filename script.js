@@ -30,6 +30,31 @@ const cards = {
 };
 
 const sequence = ["track", "team", "dashboard", "resolve"];
+
+const scenarios = [
+  {
+    title: "Launch Day Rush",
+    pressure: "Medium",
+    duration: 28,
+    intro: "A fresh feature push is live. Build visibility fast before requests pile up.",
+    roundBonus: 140,
+  },
+  {
+    title: "Weekend Event Spike",
+    pressure: "High",
+    duration: 24,
+    intro: "Traffic is surging. Coordination and dashboards need to stay sharp under load.",
+    roundBonus: 190,
+  },
+  {
+    title: "Hotfix Countdown",
+    pressure: "Critical",
+    duration: 20,
+    intro: "The team is racing a hotfix into production. Precision matters more than speed now.",
+    roundBonus: 260,
+  },
+];
+
 const baselineMetrics = {
   visibility: 54,
   alignment: 54,
@@ -39,6 +64,7 @@ const baselineMetrics = {
 
 const state = {
   started: false,
+  roundIndex: -1,
   progressIndex: 0,
   deployed: [],
   blockers: [],
@@ -46,8 +72,14 @@ const state = {
   won: false,
   locked: false,
   failedStep: null,
+  timerDuration: scenarios[0].duration,
+  timerRemaining: scenarios[0].duration,
+  score: 0,
+  streak: 0,
   feedbackTimer: null,
   resetTimer: null,
+  roundTimer: null,
+  nextRoundTimer: null,
 };
 
 const elements = {
@@ -55,12 +87,19 @@ const elements = {
   tacticalLog: document.getElementById("tacticalLog"),
   energyValue: document.getElementById("energyValue"),
   energyFill: document.getElementById("energyFill"),
+  timerValue: document.getElementById("timerValue"),
+  timerFill: document.getElementById("timerFill"),
   statusText: document.getElementById("statusText"),
   statusFill: document.getElementById("statusFill"),
   visibilityValue: document.getElementById("visibilityValue"),
   alignmentValue: document.getElementById("alignmentValue"),
   flowValue: document.getElementById("flowValue"),
   efficiencyValue: document.getElementById("efficiencyValue"),
+  scoreValue: document.getElementById("scoreValue"),
+  streakValue: document.getElementById("streakValue"),
+  scenarioTitle: document.getElementById("scenarioTitle"),
+  roundValue: document.getElementById("roundValue"),
+  pressureValue: document.getElementById("pressureValue"),
   comboHint: document.getElementById("comboHint"),
   systemEvent: document.getElementById("systemEvent"),
   arenaOverlay: document.getElementById("arenaOverlay"),
@@ -78,11 +117,22 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-function clearTimer(name) {
-  if (state[name]) {
-    window.clearTimeout(state[name]);
-    state[name] = null;
+function clearTimeoutKey(key) {
+  if (state[key]) {
+    window.clearTimeout(state[key]);
+    state[key] = null;
   }
+}
+
+function stopRoundTimer() {
+  if (state.roundTimer) {
+    window.clearInterval(state.roundTimer);
+    state.roundTimer = null;
+  }
+}
+
+function currentScenario() {
+  return state.roundIndex >= 0 ? scenarios[state.roundIndex] : null;
 }
 
 function getMetrics() {
@@ -101,6 +151,11 @@ function getMetrics() {
     metrics.efficiency -= 12;
   }
 
+  if (state.timerRemaining / state.timerDuration <= 0.35 && state.started) {
+    metrics.flow -= 6;
+    metrics.efficiency -= 4;
+  }
+
   Object.keys(metrics).forEach((key) => {
     metrics[key] = clamp(metrics[key], 0, 100);
   });
@@ -111,8 +166,10 @@ function getMetrics() {
 function getStatusScore(metrics) {
   const average =
     (metrics.visibility + metrics.alignment + metrics.flow + metrics.efficiency) / 4;
-  const completionBonus = state.progressIndex * 6 + (state.won ? 16 : 0);
-  return clamp(average + completionBonus, 0, 100);
+  const roundBonus = Math.max(state.roundIndex, 0) * 4;
+  const streakBonus = Math.min(state.streak * 2, 12);
+  const winBonus = state.won ? 20 : 0;
+  return clamp(average + roundBonus + streakBonus + winBonus, 0, 100);
 }
 
 function getStatusLabel(score) {
@@ -122,10 +179,10 @@ function getStatusLabel(score) {
   if (state.won) {
     return "Stable";
   }
-  if (score >= 72) {
+  if (score >= 78) {
     return "On Track";
   }
-  if (score >= 52) {
+  if (score >= 56) {
     return "At Risk";
   }
   return "Blocked";
@@ -245,9 +302,11 @@ function clearBlockers(immediate = false) {
 function pulseArena(type) {
   elements.arenaStage.classList.remove("feedback-success", "feedback-error");
   void elements.arenaStage.offsetWidth;
-  elements.arenaStage.classList.add(
-    type === "success" ? "feedback-success" : "feedback-error"
-  );
+  if (type === "success" || type === "error") {
+    elements.arenaStage.classList.add(
+      type === "success" ? "feedback-success" : "feedback-error"
+    );
+  }
 
   if (type === "error") {
     elements.arenaBoard.classList.remove("shake");
@@ -255,7 +314,7 @@ function pulseArena(type) {
     elements.arenaBoard.classList.add("shake");
   }
 
-  clearTimer("feedbackTimer");
+  clearTimeoutKey("feedbackTimer");
   state.feedbackTimer = window.setTimeout(() => {
     elements.arenaStage.classList.remove("feedback-success", "feedback-error");
     elements.arenaBoard.classList.remove("shake");
@@ -266,12 +325,24 @@ function pulseArena(type) {
 function updateHud() {
   const metrics = getMetrics();
   const score = getStatusScore(metrics);
+  const scenario = currentScenario();
+  const timerRatio = clamp(state.timerRemaining / state.timerDuration, 0, 1);
+
   elements.energyValue.textContent = state.progressIndex;
   elements.energyFill.style.width = `${(state.progressIndex / sequence.length) * 100}%`;
+  elements.timerValue.textContent = `${Math.ceil(state.timerRemaining)}s`;
+  elements.timerFill.style.width = `${timerRatio * 100}%`;
   elements.visibilityValue.textContent = metrics.visibility;
   elements.alignmentValue.textContent = metrics.alignment;
   elements.flowValue.textContent = metrics.flow;
   elements.efficiencyValue.textContent = metrics.efficiency;
+  elements.scoreValue.textContent = state.score;
+  elements.streakValue.textContent = state.streak;
+  elements.scenarioTitle.textContent = scenario ? scenario.title : "Standby";
+  elements.roundValue.textContent = state.started
+    ? `${state.roundIndex + 1}/${scenarios.length}`
+    : `0/${scenarios.length}`;
+  elements.pressureValue.textContent = scenario ? scenario.pressure : "Low";
   elements.statusText.textContent = getStatusLabel(score);
   elements.statusFill.style.width = `${score}%`;
 
@@ -283,6 +354,11 @@ function updateHud() {
   } else {
     document.body.classList.add("status-danger");
   }
+
+  elements.arenaStage.classList.toggle(
+    "feedback-warning",
+    state.started && !state.won && !state.locked && timerRatio <= 0.35
+  );
 
   const expectedCard = sequence[state.progressIndex];
   elements.cards.forEach((button) => {
@@ -310,40 +386,114 @@ function resetProgress() {
 }
 
 function queueProgressReset() {
-  clearTimer("resetTimer");
+  clearTimeoutKey("resetTimer");
   state.locked = true;
   updateHud();
   state.resetTimer = window.setTimeout(() => {
     resetProgress();
     state.locked = false;
-    setEvent("Retry sequence", "Deploy actions to maintain system stability.");
-    elements.comboHint.textContent = "Incorrect sequence introduces blockers.";
+    setEvent("Retry sequence", "Recover quickly. The incident clock is still running.");
+    elements.comboHint.textContent =
+      "Incorrect sequence introduces blockers. Rebuild momentum before the clock runs out.";
     updateHud();
     state.resetTimer = null;
   }, 900);
 }
 
+function beginRound(roundIndex, retry = false) {
+  clearTimeoutKey("resetTimer");
+  clearTimeoutKey("nextRoundTimer");
+  stopRoundTimer();
+
+  state.roundIndex = roundIndex;
+  state.progressIndex = 0;
+  state.deployed = [];
+  state.failedStep = null;
+  state.locked = false;
+  state.won = false;
+  clearDeployedTokens();
+  clearBlockers(true);
+
+  const scenario = currentScenario();
+  state.timerDuration = scenario.duration;
+  state.timerRemaining = scenario.duration;
+
+  setEvent(
+    retry ? "Incident reset" : scenario.title,
+    retry ? "The system slipped. Rebuild the chain cleanly." : scenario.intro
+  );
+  elements.comboHint.textContent = retry
+    ? "Fast recovery matters now. Build the chain cleanly under pressure."
+    : scenario.intro;
+  addLog(
+    retry ? "Round restarted" : "New incident",
+    retry
+      ? `${scenario.title} is still unstable. Re-establish control before time expires.`
+      : `${scenario.title} is live. Complete the full chain before the clock burns down.`
+  );
+
+  stopRoundTimer();
+  state.roundTimer = window.setInterval(() => {
+    state.timerRemaining = clamp(state.timerRemaining - 0.1, 0, state.timerDuration);
+    updateHud();
+    if (state.timerRemaining <= 0) {
+      handleTimeout();
+    }
+  }, 100);
+
+  updateHud();
+}
+
+function advanceRound() {
+  const nextRoundIndex = state.roundIndex + 1;
+  if (nextRoundIndex >= scenarios.length) {
+    winMatch();
+    return;
+  }
+
+  state.locked = true;
+  stopRoundTimer();
+  clearTimeoutKey("nextRoundTimer");
+  const nextScenario = scenarios[nextRoundIndex];
+
+  setEvent("Round clear", `System stabilized. ${nextScenario.title} is coming in.`);
+  elements.comboHint.textContent = `Next up: ${nextScenario.title}. Reset your chain and move fast.`;
+  addLog(
+    "Round clear",
+    `${currentScenario().title} stabilized. Preparing ${nextScenario.title}.`
+  );
+  updateHud();
+
+  state.nextRoundTimer = window.setTimeout(() => {
+    beginRound(nextRoundIndex);
+    state.nextRoundTimer = null;
+  }, 1400);
+}
+
 function winMatch() {
+  stopRoundTimer();
   state.won = true;
+  state.locked = true;
   clearBlockers();
   elements.arenaStage.classList.add("match-won");
   elements.arenaBoard.classList.add("victory");
   setEvent(
     "System stable",
-    "Live operations running smoothly.",
+    `All incidents cleared. Final score: ${state.score}.`,
     "success"
   );
-  elements.comboHint.textContent = "Efficient coordination ensures smooth delivery.";
+  elements.comboHint.textContent =
+    "Perfect. You held the room together across launch pressure, event traffic, and hotfix chaos.";
   addLog(
     "Match won",
-    "System stable. Live operations are running smoothly after the full deployment chain."
+    `All three incidents stabilized. Final score: ${state.score} with a streak of ${state.streak}.`
   );
   pulseArena("success");
   updateHud();
 }
 
 function handleCorrectCard(cardId) {
-  clearTimer("resetTimer");
+  clearTimeoutKey("resetTimer");
   state.failedStep = null;
   if (state.blockers.length) {
     clearBlockers();
@@ -353,12 +503,14 @@ function handleCorrectCard(cardId) {
   createDeployToken(cardId, "good", slotIndex);
   state.deployed.push(cardId);
   state.progressIndex += 1;
+  state.streak += 1;
+  state.score += 55 + state.streak * 10 + Math.max(state.roundIndex, 0) * 15;
 
   const isFinalStep = state.progressIndex === sequence.length;
   const nextCard = sequence[state.progressIndex];
 
   setEvent(
-    isFinalStep ? "Final action deployed" : "Action deployed",
+    isFinalStep ? "Sequence complete" : "Action deployed",
     cards[cardId].description,
     "success"
   );
@@ -374,13 +526,16 @@ function handleCorrectCard(cardId) {
   updateHud();
 
   if (isFinalStep) {
-    winMatch();
+    state.score += currentScenario().roundBonus;
+    advanceRound();
   }
 }
 
 function handleWrongCard(cardId) {
   const expectedCardId = sequence[state.progressIndex];
   state.failedStep = state.progressIndex;
+  state.streak = 0;
+  state.score = Math.max(0, state.score - 35);
   createDeployToken(cardId, "risk");
   spawnBlocker("Blocker detected: dependency unresolved. Progress delayed.");
   setEvent(
@@ -388,10 +543,11 @@ function handleWrongCard(cardId) {
     "Incorrect sequence introduces blockers. Dependency unresolved. Progress delayed.",
     "error"
   );
-  elements.comboHint.textContent = "Incorrect sequence introduces blockers.";
+  elements.comboHint.textContent =
+    "You lost momentum. Reset the chain and get the system back under control.";
   addLog(
     "Sequence broken",
-    `${cards[cardId].name} was deployed too early. Restarting the action chain from ${cards[sequence[0]].name}.`
+    `${cards[cardId].name} was deployed too early. Expected ${cards[expectedCardId].name}.`
   );
 
   if (navigator.vibrate) {
@@ -401,10 +557,37 @@ function handleWrongCard(cardId) {
   pulseArena("error");
   queueProgressReset();
   updateHud();
+}
 
-  if (expectedCardId) {
-    addLog("Expected next action", `The next stable play was ${cards[expectedCardId].name}.`);
+function handleTimeout() {
+  if (!state.started || state.locked || state.won) {
+    return;
   }
+
+  stopRoundTimer();
+  state.locked = true;
+  state.streak = 0;
+  state.score = Math.max(0, state.score - 60);
+  spawnBlocker("The incident timer expired. The system slipped into escalation.");
+  setEvent(
+    "Escalation",
+    "The clock ran out. The incident restarted and the team lost momentum.",
+    "error"
+  );
+  elements.comboHint.textContent =
+    "Pressure spiked. Resetting the round so you can restabilize the system.";
+  addLog(
+    "Timer expired",
+    `${currentScenario().title} escalated. The round is restarting under pressure.`
+  );
+  pulseArena("error");
+  updateHud();
+
+  clearTimeoutKey("nextRoundTimer");
+  state.nextRoundTimer = window.setTimeout(() => {
+    beginRound(state.roundIndex, true);
+    state.nextRoundTimer = null;
+  }, 1400);
 }
 
 function deployCard(cardId) {
@@ -422,35 +605,52 @@ function deployCard(cardId) {
 }
 
 function startGame() {
+  if (state.started) {
+    return;
+  }
+
   state.started = true;
-  clearDeployedTokens();
-  clearBlockers(true);
-  setEvent("Ready to deploy", "Deploy actions to maintain system stability.");
-  elements.comboHint.textContent = "Deploy actions to maintain system stability.";
-  addLog("Game started", "Play the cards in order to keep the live system stable.");
+  state.score = 0;
+  state.streak = 0;
+  state.logEntries = [];
+  beginRound(0);
+  addLog("Game started", "Three live incidents are active. Stabilize them all before the room melts down.");
   updateHud();
 }
 
 function resetMatch() {
-  clearTimer("feedbackTimer");
-  clearTimer("resetTimer");
+  stopRoundTimer();
+  clearTimeoutKey("feedbackTimer");
+  clearTimeoutKey("resetTimer");
+  clearTimeoutKey("nextRoundTimer");
+
   state.started = false;
+  state.roundIndex = -1;
   state.progressIndex = 0;
   state.deployed = [];
   state.logEntries = [];
   state.won = false;
   state.locked = false;
   state.failedStep = null;
+  state.score = 0;
+  state.streak = 0;
+  state.timerDuration = scenarios[0].duration;
+  state.timerRemaining = scenarios[0].duration;
+
   clearDeployedTokens();
   clearBlockers(true);
-  elements.arenaStage.classList.remove("feedback-success", "feedback-error", "match-won");
-  elements.arenaBoard.classList.remove("shake", "victory");
-  setEvent("Play game", "Click PLAY GAME to begin the match.");
-  elements.comboHint.textContent = "Click PLAY GAME to start the match.";
-  addLog(
-    "Match ready",
-    "Click PLAY GAME, then build the sequence in order."
+  elements.arenaStage.classList.remove(
+    "feedback-success",
+    "feedback-error",
+    "feedback-warning",
+    "match-won"
   );
+  elements.arenaBoard.classList.remove("shake", "victory");
+
+  setEvent("Play game", "Click PLAY GAME to begin the match.");
+  elements.comboHint.textContent =
+    "Three live incidents are queued. Click PLAY GAME and stabilize them all.";
+  addLog("Match ready", "Click PLAY GAME, then clear three escalating live-op incidents.");
   updateHud();
 }
 

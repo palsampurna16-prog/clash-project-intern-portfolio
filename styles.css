@@ -191,9 +191,42 @@ a {
   box-shadow: 0 0 20px rgba(105, 144, 255, 0.45);
 }
 
+.timer-panel {
+  margin-top: 18px;
+}
+
+.timer-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+}
+
+.timer-track {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 243, 208, 0.12);
+  overflow: hidden;
+  border: 1px solid rgba(255, 216, 103, 0.18);
+  margin-top: 10px;
+}
+
+.timer-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #63ec9d, #ffd063 58%, #ff7466 100%);
+  transition: width 160ms linear;
+}
+
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-top: 16px;
 }
@@ -250,6 +283,36 @@ a {
 .arena-wrapper {
   display: grid;
   gap: 18px;
+}
+
+.intel-panel {
+  padding: 18px 22px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.intel-card {
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: rgba(255, 244, 205, 0.06);
+  border: 1px solid rgba(255, 219, 111, 0.12);
+}
+
+.intel-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.84rem;
+  margin-bottom: 6px;
+}
+
+.intel-card strong {
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+  font-size: 1.16rem;
 }
 
 .arena-header {
@@ -588,6 +651,8 @@ a {
   z-index: 4;
   display: grid;
   place-items: center;
+  align-content: center;
+  gap: 18px;
   background: linear-gradient(180deg, rgba(11, 24, 18, 0.18), rgba(11, 24, 18, 0.32));
   transition: opacity 220ms ease, visibility 220ms ease;
 }
@@ -627,6 +692,31 @@ a {
   box-shadow:
     0 0 0 1px rgba(255, 216, 109, 0.24),
     0 24px 46px rgba(0, 0, 0, 0.28);
+}
+
+.start-copy {
+  text-align: center;
+  max-width: 420px;
+  padding: 0 16px;
+}
+
+.start-kicker {
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+  color: var(--gold);
+  text-transform: uppercase;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.start-copy p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--text);
 }
 
 .sequence-slot {
@@ -1053,6 +1143,13 @@ a {
     var(--shadow);
 }
 
+.arena-stage.feedback-warning {
+  box-shadow:
+    0 0 0 1px rgba(255, 204, 96, 0.2),
+    0 0 34px rgba(255, 204, 96, 0.18),
+    var(--shadow);
+}
+
 .arena-stage.match-won {
   box-shadow:
     0 0 0 1px rgba(111, 255, 170, 0.26),
@@ -1144,6 +1241,10 @@ a {
 
   .arena-board {
     min-height: 560px;
+  }
+
+  .intel-panel {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1259,6 +1360,10 @@ a {
 
   .metrics-grid,
   .tool-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .intel-panel {
     grid-template-columns: 1fr;
   }
 
