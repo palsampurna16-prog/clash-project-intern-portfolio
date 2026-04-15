@@ -47,7 +47,7 @@ a {
 .app-shell {
   max-width: 1520px;
   margin: 0 auto;
-  padding: 18px;
+  padding: 22px 20px 28px;
 }
 
 .topbar,
@@ -58,12 +58,13 @@ a {
 
 .topbar {
   grid-template-columns: 1.25fr 0.9fr;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
 }
 
 .game-layout {
   grid-template-columns: minmax(240px, 290px) minmax(0, 1fr) minmax(240px, 320px);
   align-items: start;
+  gap: 22px;
 }
 
 .hud-panel {
@@ -81,7 +82,7 @@ a {
 .sidebar .hud-panel,
 .arena-header,
 .energy-panel {
-  padding: 18px;
+  padding: 22px;
 }
 
 .player-rank,
@@ -91,24 +92,25 @@ a {
     "Trebuchet MS",
     "Segoe UI",
     sans-serif;
-  font-size: 0.8rem;
+  font-size: 1.18rem;
   letter-spacing: 0;
   text-transform: uppercase;
   color: var(--gold);
+  line-height: 1;
 }
 
 .player-card h1,
 .status-panel h2,
 .sidebar h2,
 .arena-header h2 {
-  margin: 8px 0 10px;
+  margin: 10px 0 8px;
   font-family:
     "Avenir Next Condensed",
     "Trebuchet MS",
     "Segoe UI",
     sans-serif;
-  font-size: clamp(1.5rem, 2vw, 2.3rem);
-  line-height: 1.05;
+  font-size: clamp(1.2rem, 1.55vw, 1.85rem);
+  line-height: 1.16;
 }
 
 .player-card p,
@@ -116,7 +118,9 @@ a {
 .energy-panel p {
   margin: 0;
   color: var(--muted);
-  line-height: 1.5;
+  line-height: 1.45;
+  font-size: 0.98rem;
+  max-width: 52ch;
 }
 
 .player-meta,
@@ -125,13 +129,13 @@ a {
 .tactical-log {
   list-style: none;
   padding: 0;
-  margin: 16px 0 0;
+  margin: 18px 0 0;
 }
 
 .player-meta li,
 .play-style li,
 .contact-list li {
-  padding: 10px 0;
+  padding: 12px 0;
   border-bottom: 1px solid rgba(255, 234, 173, 0.1);
   color: var(--text);
 }
@@ -245,7 +249,7 @@ a {
 
 .arena-wrapper {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .arena-header {
@@ -293,7 +297,7 @@ a {
 .arena-board {
   position: relative;
   min-height: 620px;
-  padding: 32px;
+  padding: 36px;
   background:
     linear-gradient(180deg, rgba(84, 135, 59, 0.95), rgba(61, 109, 53, 0.98)),
     repeating-linear-gradient(
@@ -491,11 +495,11 @@ a {
 .system-event {
   position: absolute;
   left: 50%;
-  top: 50%;
-  width: min(420px, calc(100% - 56px));
+  top: 56%;
+  width: min(520px, calc(100% - 96px));
   transform: translate(-50%, -50%);
   text-align: center;
-  padding: 18px 22px;
+  padding: 20px 24px;
   border-radius: var(--radius);
   background: rgba(13, 23, 28, 0.76);
   border: 1px solid rgba(255, 218, 109, 0.18);
@@ -522,13 +526,15 @@ a {
     "Segoe UI",
     sans-serif;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  font-size: 1.35rem;
 }
 
 .system-event p {
   margin: 0;
   color: var(--text);
-  line-height: 1.5;
+  line-height: 1.38;
+  font-size: 1.05rem;
 }
 
 .system-event.active {
@@ -546,7 +552,7 @@ a {
 .sequence-track {
   position: absolute;
   left: 50%;
-  top: 184px;
+  top: 164px;
   width: min(760px, calc(100% - 120px));
   transform: translateX(-50%);
   display: grid;
@@ -556,6 +562,7 @@ a {
 }
 
 .sequence-slot {
+  position: relative;
   min-height: 72px;
   padding: 10px 12px;
   border-radius: var(--radius);
@@ -588,6 +595,11 @@ a {
   box-shadow: 0 0 22px rgba(67, 233, 150, 0.14);
 }
 
+.sequence-slot.filled .slot-order,
+.sequence-slot.filled .slot-label {
+  opacity: 0.18;
+}
+
 .sequence-slot.failed {
   border-color: rgba(255, 111, 100, 0.38);
   background:
@@ -602,21 +614,21 @@ a {
     "Segoe UI",
     sans-serif;
   color: var(--gold);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
 }
 
 .slot-label {
-  font-size: 0.9rem;
-  line-height: 1.25;
+  font-size: 0.84rem;
+  line-height: 1.18;
 }
 
 .deploy-token {
   position: absolute;
   left: 50%;
-  bottom: 88px;
-  width: 136px;
-  min-height: 74px;
-  border-radius: 10px;
+  bottom: 82px;
+  width: 104px;
+  min-height: 52px;
+  border-radius: 8px;
   transform: translateX(-50%) scale(0.7);
   opacity: 0;
   display: grid;
@@ -626,9 +638,9 @@ a {
     "Trebuchet MS",
     "Segoe UI",
     sans-serif;
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   text-align: center;
-  padding: 12px 10px;
+  padding: 8px 8px;
   color: #112118;
   animation: deploy-in 760ms cubic-bezier(0.18, 0.88, 0.33, 1.12) forwards;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -651,11 +663,14 @@ a {
 .deploy-token.persist {
   opacity: 1;
   transform: translateX(var(--target-x, -50%)) translateY(var(--target-y, 0)) scale(1);
+  box-shadow: 0 0 12px rgba(89, 250, 166, 0.16);
 }
 
 .deploy-token small {
   display: block;
   color: rgba(17, 33, 24, 0.78);
+  font-size: 0.56rem;
+  margin-top: 2px;
 }
 
 .blocker {
@@ -698,7 +713,7 @@ a {
 .deck-panel {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  gap: 16px;
 }
 
 .arena-card {
@@ -707,7 +722,7 @@ a {
   grid-template-rows: auto 86px auto auto;
   gap: 10px;
   padding: 14px 12px 16px;
-  min-height: 228px;
+  min-height: 212px;
   background:
     linear-gradient(180deg, rgba(255, 236, 179, 0.24), rgba(255, 255, 255, 0.02) 28%),
     linear-gradient(180deg, rgba(41, 55, 61, 0.95), rgba(16, 27, 30, 0.98));
@@ -1095,7 +1110,7 @@ a {
   }
 
   .sequence-track {
-    top: 158px;
+    top: 146px;
     width: calc(100% - 44px);
     gap: 8px;
   }
@@ -1129,6 +1144,7 @@ a {
   }
 
   .system-event {
+    top: 60%;
     width: calc(100% - 26px);
     padding: 14px 16px;
   }
@@ -1139,9 +1155,9 @@ a {
   }
 
   .deploy-token {
-    width: 108px;
-    min-height: 64px;
-    font-size: 0.68rem;
+    width: 86px;
+    min-height: 44px;
+    font-size: 0.55rem;
   }
 }
 
@@ -1169,6 +1185,11 @@ a {
   .status-panel h2,
   .sidebar h2,
   .arena-header h2 {
-    font-size: 1.35rem;
+    font-size: 1.08rem;
+  }
+
+  .player-rank,
+  .section-kicker {
+    font-size: 1rem;
   }
 }

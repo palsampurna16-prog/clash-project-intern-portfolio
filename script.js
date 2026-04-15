@@ -30,6 +30,7 @@ const cards = {
 };
 
 const sequence = ["track", "team", "dashboard", "resolve"];
+const deployedTokenDrop = 96;
 const baselineMetrics = {
   visibility: 54,
   alignment: 54,
@@ -170,7 +171,12 @@ function getSlotTarget(stepIndex) {
   const startX = overlayRect.width / 2;
   const startY = overlayRect.height - 126;
   const targetX = slotRect.left - overlayRect.left + slotRect.width / 2 - startX;
-  const targetY = slotRect.top - overlayRect.top + slotRect.height / 2 - startY;
+  const targetY =
+    slotRect.top -
+    overlayRect.top +
+    slotRect.height / 2 +
+    deployedTokenDrop -
+    startY;
   return { x: targetX, y: targetY };
 }
 
