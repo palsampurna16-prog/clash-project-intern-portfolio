@@ -1,0 +1,1018 @@
+:root {
+  color-scheme: dark;
+  --bg-deep: #101720;
+  --bg-mid: #1c2b2d;
+  --panel: rgba(18, 30, 32, 0.9);
+  --panel-strong: rgba(14, 24, 26, 0.96);
+  --line: rgba(255, 227, 138, 0.24);
+  --text: #f8f4df;
+  --muted: #d7cfa9;
+  --gold: #ffcd57;
+  --orange: #ff824d;
+  --grass: #5f9d45;
+  --grass-dark: #3d6f34;
+  --teal: #56d2b4;
+  --danger: #ff5d59;
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  --radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family:
+    "Inter",
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  background: linear-gradient(180deg, #15212d 0%, #11191f 45%, #0d1319 100%);
+  color: var(--text);
+}
+
+body {
+  min-height: 100vh;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+.app-shell {
+  max-width: 1520px;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+.topbar,
+.game-layout {
+  display: grid;
+  gap: 18px;
+}
+
+.topbar {
+  grid-template-columns: 1.25fr 0.9fr;
+  margin-bottom: 18px;
+}
+
+.game-layout {
+  grid-template-columns: minmax(240px, 290px) minmax(0, 1fr) minmax(240px, 320px);
+  align-items: start;
+}
+
+.hud-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 221, 126, 0.08), rgba(255, 255, 255, 0) 18%),
+    var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.player-card,
+.status-panel,
+.sidebar .hud-panel,
+.arena-header,
+.energy-panel {
+  padding: 18px;
+}
+
+.player-rank,
+.section-kicker {
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.player-card h1,
+.status-panel h2,
+.sidebar h2,
+.arena-header h2 {
+  margin: 8px 0 10px;
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+  font-size: clamp(1.5rem, 2vw, 2.3rem);
+  line-height: 1.05;
+}
+
+.player-card p,
+.sidebar p,
+.energy-panel p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.player-meta,
+.play-style,
+.contact-list,
+.tactical-log {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+}
+
+.player-meta li,
+.play-style li,
+.contact-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 234, 173, 0.1);
+  color: var(--text);
+}
+
+.player-meta li:last-child,
+.play-style li:last-child,
+.contact-list li:last-child {
+  border-bottom: 0;
+}
+
+.status-header,
+.energy-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+}
+
+.status-header strong {
+  color: var(--teal);
+  font-size: 1.2rem;
+}
+
+.status-bar,
+.energy-track {
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255, 243, 208, 0.12);
+  overflow: hidden;
+  border: 1px solid rgba(255, 216, 103, 0.18);
+  margin-top: 14px;
+}
+
+.status-fill,
+.energy-fill {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  transition: width 260ms ease, background-color 260ms ease, box-shadow 260ms ease;
+}
+
+.status-fill {
+  background: linear-gradient(90deg, #eb5d4a 0%, #ffce60 45%, #5fdb9f 100%);
+}
+
+.energy-fill {
+  background: linear-gradient(90deg, #4ed4ea, #8a77ff 85%);
+  box-shadow: 0 0 20px rgba(105, 144, 255, 0.45);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.metrics-grid div {
+  padding: 14px;
+  border-radius: var(--radius);
+  background: rgba(255, 244, 205, 0.06);
+  border: 1px solid rgba(255, 219, 111, 0.12);
+}
+
+.metrics-grid span,
+.contact-list span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin-bottom: 4px;
+}
+
+.metrics-grid strong {
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+  font-size: 1.4rem;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.tool-grid span {
+  display: grid;
+  place-items: center;
+  min-height: 52px;
+  padding: 12px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 214, 92, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 213, 95, 0.08), transparent 90%),
+    rgba(255, 245, 222, 0.04);
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+  text-align: center;
+}
+
+.arena-wrapper {
+  display: grid;
+  gap: 16px;
+}
+
+.arena-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.reset-button {
+  border: 1px solid rgba(255, 215, 98, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 205, 87, 0.22), rgba(255, 142, 73, 0.18)),
+    rgba(30, 19, 10, 0.6);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.reset-button:hover,
+.reset-button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(255, 162, 84, 0.22);
+}
+
+.arena-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 222, 131, 0.14);
+  box-shadow: var(--shadow);
+}
+
+.arena-sky {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 208, 91, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(33, 62, 92, 0.9), rgba(17, 38, 45, 0.18) 26%, transparent 45%);
+  pointer-events: none;
+}
+
+.arena-board {
+  position: relative;
+  min-height: 620px;
+  padding: 32px;
+  background:
+    linear-gradient(180deg, rgba(84, 135, 59, 0.95), rgba(61, 109, 53, 0.98)),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03),
+      rgba(255, 255, 255, 0.03) 40px,
+      transparent 40px,
+      transparent 80px
+    );
+}
+
+.arena-board::before {
+  content: "";
+  position: absolute;
+  inset: 16px;
+  border: 10px solid #8c6937;
+  border-radius: 12px;
+  box-shadow:
+    inset 0 0 0 4px rgba(252, 236, 184, 0.24),
+    inset 0 0 30px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+
+.lane,
+.river {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.lane {
+  width: calc(100% - 160px);
+  height: 126px;
+  border-radius: 999px;
+  border: 2px solid rgba(245, 234, 182, 0.32);
+  background:
+    linear-gradient(180deg, rgba(241, 221, 162, 0.12), rgba(255, 255, 255, 0)),
+    rgba(61, 95, 39, 0.22);
+  box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.18);
+}
+
+.lane-left {
+  top: 132px;
+}
+
+.lane-right {
+  bottom: 132px;
+}
+
+.lane::after {
+  content: "";
+  position: absolute;
+  inset: 12px 18px;
+  border-radius: inherit;
+  border: 1px dashed rgba(255, 239, 181, 0.22);
+}
+
+.lane-node {
+  position: absolute;
+  top: 50%;
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  background:
+    radial-gradient(circle, rgba(255, 217, 112, 0.18), rgba(255, 255, 255, 0) 68%),
+    rgba(13, 24, 16, 0.28);
+  border: 1px solid rgba(255, 236, 179, 0.24);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.16);
+}
+
+.lane-node[data-slot="0"] {
+  left: 14%;
+}
+
+.lane-node[data-slot="1"] {
+  left: calc(50% - 39px);
+}
+
+.lane-node[data-slot="2"] {
+  right: 14%;
+}
+
+.river {
+  top: calc(50% - 42px);
+  width: calc(100% - 136px);
+  height: 84px;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(46, 185, 198, 0.86), rgba(23, 142, 165, 0.92)),
+    rgba(35, 147, 160, 0.95);
+  border: 2px solid rgba(201, 245, 247, 0.38);
+  box-shadow:
+    inset 0 0 18px rgba(255, 255, 255, 0.2),
+    0 0 24px rgba(51, 209, 214, 0.25);
+}
+
+.river::before,
+.river::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 28%;
+  height: 14px;
+  background: rgba(236, 255, 255, 0.18);
+  transform: translateY(-50%);
+  border-radius: 999px;
+}
+
+.river::before {
+  left: 8%;
+}
+
+.river::after {
+  right: 8%;
+}
+
+.tower {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 156px;
+  height: 106px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+  padding: 14px;
+  z-index: 2;
+}
+
+.tower::before,
+.tower::after {
+  content: "";
+  position: absolute;
+  width: 26px;
+  height: 34px;
+  background: inherit;
+  top: -18px;
+  border-radius: 6px 6px 0 0;
+}
+
+.tower::before {
+  left: 20px;
+}
+
+.tower::after {
+  right: 20px;
+}
+
+.top-tower {
+  top: 44px;
+  background:
+    linear-gradient(180deg, rgba(248, 217, 133, 0.22), rgba(255, 255, 255, 0)),
+    #74562b;
+  border: 2px solid rgba(255, 229, 155, 0.34);
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.22),
+    inset 0 0 18px rgba(255, 245, 215, 0.08);
+}
+
+.bottom-tower {
+  bottom: 44px;
+  background:
+    linear-gradient(180deg, rgba(87, 236, 200, 0.18), rgba(255, 255, 255, 0)),
+    #3c4f5f;
+  border: 2px solid rgba(127, 249, 220, 0.26);
+}
+
+.crown {
+  position: absolute;
+  top: 86px;
+  width: 60px;
+  height: 44px;
+  background:
+    linear-gradient(180deg, rgba(255, 221, 136, 0.92), rgba(213, 138, 52, 0.94));
+  clip-path: polygon(0 100%, 12% 28%, 28% 58%, 46% 0, 62% 58%, 82% 18%, 100% 100%);
+  border: 1px solid rgba(255, 241, 197, 0.38);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.crown-left {
+  left: 60px;
+}
+
+.crown-right {
+  right: 60px;
+}
+
+.system-event {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(420px, calc(100% - 56px));
+  transform: translate(-50%, -50%);
+  text-align: center;
+  padding: 18px 22px;
+  border-radius: var(--radius);
+  background: rgba(13, 23, 28, 0.76);
+  border: 1px solid rgba(255, 218, 109, 0.18);
+  z-index: 3;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.system-event .event-label {
+  color: var(--gold);
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.system-event p {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.system-event.active {
+  transform: translate(-50%, -54%);
+}
+
+.arena-overlay,
+.blocker-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.deploy-token {
+  position: absolute;
+  left: 50%;
+  bottom: 116px;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  transform: translateX(-50%) scale(0.7);
+  opacity: 0;
+  display: grid;
+  place-items: center;
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+  font-size: 0.72rem;
+  text-align: center;
+  padding: 10px;
+  color: #112118;
+  animation: deploy-in 900ms cubic-bezier(0.18, 0.88, 0.33, 1.12) forwards;
+}
+
+.deploy-token.good {
+  background:
+    radial-gradient(circle at top, rgba(255, 254, 236, 0.9), rgba(255, 255, 255, 0) 36%),
+    linear-gradient(180deg, rgba(132, 255, 219, 0.92), rgba(58, 202, 127, 0.95));
+  box-shadow: 0 0 24px rgba(89, 250, 166, 0.28);
+}
+
+.deploy-token.risk {
+  background:
+    radial-gradient(circle at top, rgba(255, 246, 218, 0.9), rgba(255, 255, 255, 0) 36%),
+    linear-gradient(180deg, rgba(255, 219, 120, 0.94), rgba(255, 116, 88, 0.95));
+  box-shadow: 0 0 28px rgba(255, 104, 92, 0.26);
+}
+
+.deploy-token small {
+  display: block;
+  color: rgba(17, 33, 24, 0.78);
+}
+
+.blocker {
+  position: absolute;
+  width: 68px;
+  height: 68px;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 232, 188, 0.2), rgba(255, 255, 255, 0)),
+    rgba(143, 40, 37, 0.92);
+  border: 1px solid rgba(255, 194, 184, 0.3);
+  box-shadow: 0 10px 24px rgba(85, 7, 7, 0.28);
+  animation: blocker-rise 380ms ease forwards;
+}
+
+.blocker::before,
+.blocker::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 239, 209, 0.9);
+}
+
+.blocker::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.blocker::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.blocker.clearing {
+  animation: blocker-clear 520ms ease forwards;
+}
+
+.deck-panel {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.arena-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 86px auto auto;
+  gap: 10px;
+  padding: 14px 12px 16px;
+  min-height: 228px;
+  background:
+    linear-gradient(180deg, rgba(255, 236, 179, 0.24), rgba(255, 255, 255, 0.02) 28%),
+    linear-gradient(180deg, rgba(41, 55, 61, 0.95), rgba(16, 27, 30, 0.98));
+  border: 1px solid rgba(255, 220, 122, 0.18);
+  color: var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    filter 180ms ease;
+}
+
+.arena-card:hover,
+.arena-card:focus-visible {
+  transform: translateY(-6px);
+  border-color: rgba(255, 217, 118, 0.34);
+  box-shadow: 0 20px 36px rgba(0, 0, 0, 0.34);
+}
+
+.arena-card.spent {
+  opacity: 0.5;
+  filter: grayscale(0.18);
+}
+
+.arena-card.locked {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.cost {
+  position: absolute;
+  top: -11px;
+  left: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+  font-weight: 700;
+  color: #111927;
+  background: linear-gradient(180deg, #c8fbff, #5ca5ff);
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 8px 16px rgba(18, 31, 68, 0.36);
+}
+
+.card-art {
+  display: block;
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255, 249, 234, 0.08);
+  border: 1px solid rgba(255, 229, 157, 0.16);
+}
+
+.card-art::before,
+.card-art::after {
+  content: "";
+  position: absolute;
+}
+
+.art-track {
+  background:
+    linear-gradient(180deg, rgba(255, 219, 118, 0.18), rgba(255, 255, 255, 0)),
+    linear-gradient(135deg, rgba(57, 223, 176, 0.12), rgba(104, 148, 255, 0.08)),
+    #233540;
+}
+
+.art-track::before {
+  inset: 18px 14px auto 14px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(96, 246, 210, 0.74);
+  box-shadow:
+    0 18px 0 rgba(255, 218, 100, 0.78),
+    0 36px 0 rgba(133, 159, 255, 0.8);
+}
+
+.art-track::after {
+  inset: 16px 18px 16px auto;
+  width: 18px;
+  border-radius: 4px;
+  background:
+    linear-gradient(180deg, #f4fffb, #61e2c7);
+}
+
+.art-resolve {
+  background:
+    linear-gradient(180deg, rgba(255, 223, 138, 0.14), rgba(255, 255, 255, 0)),
+    #39242a;
+}
+
+.art-resolve::before,
+.art-resolve::after {
+  left: 50%;
+  top: 50%;
+  width: 48px;
+  height: 10px;
+  border-radius: 999px;
+  background: #ffd780;
+}
+
+.art-resolve::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.art-resolve::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.art-dashboard {
+  background:
+    linear-gradient(180deg, rgba(255, 215, 98, 0.14), rgba(255, 255, 255, 0)),
+    #233047;
+}
+
+.art-dashboard::before {
+  inset: auto 16px 16px 16px;
+  height: 22px;
+  border-radius: 4px;
+  background:
+    linear-gradient(90deg, #78f2cf 26%, transparent 26% 38%, #ffd063 38% 63%, transparent 63% 76%, #69a0ff 76%);
+}
+
+.art-dashboard::after {
+  inset: 14px 16px auto 16px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(255, 241, 207, 0.22);
+}
+
+.art-team {
+  background:
+    linear-gradient(180deg, rgba(255, 218, 112, 0.14), rgba(255, 255, 255, 0)),
+    #2d3540;
+}
+
+.art-team::before {
+  left: 50%;
+  top: 26px;
+  width: 56px;
+  height: 56px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, #ffd36d 0 18px, transparent 19px),
+    radial-gradient(circle at left 14px bottom 12px, #67e4c8 0 12px, transparent 13px),
+    radial-gradient(circle at right 14px bottom 12px, #7ea0ff 0 12px, transparent 13px);
+}
+
+.art-workflow {
+  background:
+    linear-gradient(180deg, rgba(255, 219, 114, 0.14), rgba(255, 255, 255, 0)),
+    #263d33;
+}
+
+.art-workflow::before {
+  inset: 18px auto 18px 16px;
+  width: 44px;
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, #77f0c9, #45b784);
+}
+
+.art-workflow::after {
+  inset: 18px 16px 18px auto;
+  width: 34px;
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, #ffe191, #ff8f5d);
+  box-shadow: -42px 0 0 rgba(255, 242, 210, 0.15);
+}
+
+.card-name {
+  display: block;
+  font-family:
+    "Avenir Next Condensed",
+    "Trebuchet MS",
+    "Segoe UI",
+    sans-serif;
+  font-size: 1.08rem;
+}
+
+.card-role {
+  display: block;
+  color: var(--muted);
+  line-height: 1.35;
+  font-size: 0.93rem;
+}
+
+.tactical-log {
+  display: grid;
+  gap: 10px;
+  counter-reset: log;
+}
+
+.tactical-log li {
+  padding: 12px 14px;
+  background: rgba(255, 245, 222, 0.05);
+  border: 1px solid rgba(255, 222, 130, 0.12);
+  border-radius: var(--radius);
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.tactical-log strong {
+  display: block;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.contact-list a,
+.contact-list strong {
+  color: var(--text);
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.contact-list a:hover,
+.contact-list a:focus-visible {
+  color: var(--gold);
+}
+
+.status-ok #statusText {
+  color: var(--teal);
+}
+
+.status-risk #statusText {
+  color: #ffd063;
+}
+
+.status-danger #statusText {
+  color: #ff8d86;
+}
+
+@keyframes deploy-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.6);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(var(--target-x, -50%)) translateY(var(--target-y, 0)) scale(1);
+  }
+}
+
+@keyframes blocker-rise {
+  from {
+    opacity: 0;
+    transform: scale(0.6) translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes blocker-clear {
+  from {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.2) rotate(14deg);
+  }
+}
+
+@media (max-width: 1200px) {
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .arena-board {
+    min-height: 560px;
+  }
+}
+
+@media (max-width: 920px) {
+  .app-shell {
+    padding: 12px;
+  }
+
+  .topbar,
+  .sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .arena-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .deck-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .arena-card:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  .arena-board {
+    min-height: 500px;
+    padding: 18px;
+  }
+
+  .lane,
+  .river {
+    width: calc(100% - 56px);
+  }
+
+  .lane {
+    height: 110px;
+  }
+
+  .lane-left {
+    top: 120px;
+  }
+
+  .lane-right {
+    bottom: 120px;
+  }
+
+  .river {
+    top: calc(50% - 34px);
+    height: 68px;
+  }
+
+  .tower {
+    width: 128px;
+    height: 92px;
+    font-size: 0.9rem;
+  }
+
+  .system-event {
+    width: calc(100% - 26px);
+    padding: 14px 16px;
+  }
+
+  .lane-node {
+    width: 60px;
+    height: 60px;
+  }
+
+  .deploy-token {
+    width: 78px;
+    height: 78px;
+  }
+}
+
+@media (max-width: 560px) {
+  .deck-panel,
+  .sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .arena-card:last-child {
+    grid-column: auto;
+  }
+
+  .metrics-grid,
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .player-card h1,
+  .status-panel h2,
+  .sidebar h2,
+  .arena-header h2 {
+    font-size: 1.35rem;
+  }
+}
