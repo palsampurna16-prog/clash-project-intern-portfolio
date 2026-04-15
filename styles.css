@@ -551,7 +551,7 @@ a {
 
 .sequence-track {
   position: absolute;
-  left: 50%;
+  left: calc(50% - 72px);
   top: 164px;
   width: fit-content;
   max-width: calc(100% - 120px);
@@ -565,7 +565,7 @@ a {
 
 .deploy-track {
   position: absolute;
-  left: 50%;
+  left: calc(50% - 72px);
   top: calc(50% - 28px);
   width: fit-content;
   max-width: calc(100% - 120px);
@@ -1178,6 +1178,7 @@ a {
   }
 
   .sequence-track {
+    left: 50%;
     top: 146px;
     width: calc(100% - 44px);
     max-width: none;
@@ -1186,6 +1187,7 @@ a {
   }
 
   .deploy-track {
+    left: 50%;
     top: calc(50% - 18px);
     width: calc(100% - 56px);
     max-width: none;
