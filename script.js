@@ -1,80 +1,53 @@
 const cards = {
   track: {
     name: "Track Workstreams",
-    cost: 2,
-    type: "good",
-    metricDelta: { visibility: 16, alignment: 8, flow: 10, efficiency: 6 },
+    metricDelta: { visibility: 14, alignment: 8, flow: 8, efficiency: 6 },
     description:
-      "I coordinate 5+ concurrent workstreams and keep ownership and timelines visible.",
-    log: "Visibility goes up. Multiple workstreams are now mapped and easier to steer.",
-    combo: "A strong opener. Shared visibility makes every follow-up card more effective.",
-    preferredAfter: [],
+      "Workstreams are mapped, owners are clear, and timelines stay visible across the live system.",
+    log: "Workstreams are visible and the operating picture is clear.",
   },
   team: {
-    name: "Team Coordination",
-    cost: 2,
-    type: "good",
-    metricDelta: { visibility: 6, alignment: 16, flow: 12, efficiency: 6 },
+    name: "Coordinate Teams",
+    metricDelta: { visibility: 6, alignment: 16, flow: 12, efficiency: 8 },
     description:
-      "I work cross-functionally so timelines, owners, and handoffs stay aligned.",
-    log: "Teams lock into the same beat. Handoffs feel cleaner and less reactive.",
-    combo:
-      "Great timing. Coordination right after visibility creates a smooth operating rhythm.",
-    preferredAfter: ["track"],
+      "Cross-functional coordination locks teams onto the same priorities and delivery timing.",
+    log: "Teams are aligned and handoffs are moving on rhythm.",
   },
   dashboard: {
     name: "Maintain Dashboards",
-    cost: 3,
-    type: "good",
-    metricDelta: { visibility: 14, alignment: 8, flow: 8, efficiency: 12 },
+    metricDelta: { visibility: 16, alignment: 8, flow: 8, efficiency: 10 },
     description:
-      "I build KPI dashboards and reporting that support faster, better decisions.",
-    log: "Decision signals sharpen. The team can see progress, drift, and next actions sooner.",
-    combo:
-      "Dashboards hit harder once workstreams and coordination are already in place.",
-    preferredAfter: ["track", "team"],
+      "KPIs, reports, and current status are visible so decisions land faster and with less churn.",
+    log: "Dashboards are updated and leadership has clean visibility into delivery health.",
   },
   resolve: {
     name: "Resolve Blockers",
-    cost: 3,
-    type: "utility",
-    metricDelta: { visibility: 4, alignment: 6, flow: 20, efficiency: 10 },
+    metricDelta: { visibility: 4, alignment: 8, flow: 18, efficiency: 12 },
     description:
-      "I identify risks early, follow up persistently, and keep work moving.",
-    log: "Risks are surfaced and chased down before they spread through the system.",
-    combo:
-      "Well timed. Clearing blockers after mapping the work keeps delivery stable under pressure.",
-    preferredAfter: ["track", "team", "dashboard"],
+      "Risks are resolved early, dependencies are cleared, and execution keeps moving.",
+    log: "Blockers are resolved and the delivery path opens back up.",
   },
-  workflow: {
-    name: "Improve Workflow",
-    cost: 4,
-    type: "good",
-    metricDelta: { visibility: 8, alignment: 10, flow: 10, efficiency: 18 },
-    description:
-      "I standardize documentation and refine the process so execution scales better.",
-    log: "The system gets lighter. Repeated work shrinks and coordination becomes easier to sustain.",
-    combo:
-      "Best played once the operation is already visible and stable. Then improvement sticks.",
-    preferredAfter: ["track", "team", "dashboard", "resolve"],
-  },
+};
+
+const sequence = ["track", "team", "dashboard", "resolve"];
+const baselineMetrics = {
+  visibility: 54,
+  alignment: 54,
+  flow: 54,
+  efficiency: 54,
 };
 
 const state = {
-  energy: 6,
-  maxEnergy: 10,
-  metrics: {
-    visibility: 70,
-    alignment: 68,
-    flow: 66,
-    efficiency: 64,
-  },
-  played: [],
+  progressIndex: 0,
+  deployed: [],
   blockers: [],
   logEntries: [],
+  won: false,
+  locked: false,
+  failedStep: null,
+  feedbackTimer: null,
+  resetTimer: null,
 };
-
-const recommendedOrder = ["track", "team", "dashboard", "resolve", "workflow"];
 
 const elements = {
   cards: [...document.querySelectorAll(".arena-card")],
@@ -92,70 +65,63 @@ const elements = {
   arenaOverlay: document.getElementById("arenaOverlay"),
   blockerLayer: document.getElementById("blockerLayer"),
   arenaStage: document.getElementById("arenaStage"),
+  arenaBoard: document.querySelector(".arena-board"),
   resetButton: document.getElementById("resetButton"),
+  sequenceSlots: [...document.querySelectorAll(".sequence-slot")],
 };
-
-const laneTargets = [
-  { x: -180, y: -220 },
-  { x: 0, y: -170 },
-  { x: 180, y: -220 },
-  { x: -180, y: -70 },
-  { x: 0, y: -30 },
-  { x: 180, y: -70 },
-];
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-function getStatusScore() {
-  const metricAverage =
-    (state.metrics.visibility +
-      state.metrics.alignment +
-      state.metrics.flow +
-      state.metrics.efficiency) /
-    4;
-  return clamp(metricAverage - state.blockers.length * 12, 0, 100);
+function clearTimer(name) {
+  if (state[name]) {
+    window.clearTimeout(state[name]);
+    state[name] = null;
+  }
+}
+
+function getMetrics() {
+  const metrics = { ...baselineMetrics };
+
+  state.deployed.forEach((cardId) => {
+    Object.entries(cards[cardId].metricDelta).forEach(([key, delta]) => {
+      metrics[key] += delta;
+    });
+  });
+
+  if (state.blockers.length) {
+    metrics.visibility -= 8;
+    metrics.alignment -= 10;
+    metrics.flow -= 16;
+    metrics.efficiency -= 12;
+  }
+
+  Object.keys(metrics).forEach((key) => {
+    metrics[key] = clamp(metrics[key], 0, 100);
+  });
+
+  return metrics;
+}
+
+function getStatusScore(metrics) {
+  const average =
+    (metrics.visibility + metrics.alignment + metrics.flow + metrics.efficiency) / 4;
+  const completionBonus = state.progressIndex * 6 + (state.won ? 16 : 0);
+  return clamp(average + completionBonus, 0, 100);
 }
 
 function getStatusLabel(score) {
+  if (state.won) {
+    return "Stable";
+  }
   if (score >= 72) {
     return "On Track";
   }
   if (score >= 52) {
     return "At Risk";
   }
-  return "Critical";
-}
-
-function updateHud() {
-  const score = getStatusScore();
-  elements.energyValue.textContent = state.energy;
-  elements.energyFill.style.width = `${(state.energy / state.maxEnergy) * 100}%`;
-  elements.visibilityValue.textContent = state.metrics.visibility;
-  elements.alignmentValue.textContent = state.metrics.alignment;
-  elements.flowValue.textContent = state.metrics.flow;
-  elements.efficiencyValue.textContent = state.metrics.efficiency;
-  elements.statusText.textContent = getStatusLabel(score);
-  elements.statusFill.style.width = `${score}%`;
-
-  document.body.classList.remove("status-ok", "status-risk", "status-danger");
-  if (score >= 72) {
-    document.body.classList.add("status-ok");
-  } else if (score >= 52) {
-    document.body.classList.add("status-risk");
-  } else {
-    document.body.classList.add("status-danger");
-  }
-
-  elements.cards.forEach((button) => {
-    const card = cards[button.dataset.card];
-    const alreadyPlayed = state.played.includes(button.dataset.card);
-    const affordable = state.energy >= card.cost;
-    button.classList.toggle("spent", alreadyPlayed);
-    button.classList.toggle("locked", !affordable || alreadyPlayed);
-    button.disabled = !affordable || alreadyPlayed;
-  });
+  return "Blocked";
 }
 
 function renderLog() {
@@ -172,165 +138,295 @@ function addLog(title, body) {
   renderLog();
 }
 
-function setEvent(label, message) {
+function setEvent(label, message, tone = "neutral") {
   const labelNode = elements.systemEvent.querySelector(".event-label");
   const copyNode = elements.systemEvent.querySelector("p");
   labelNode.textContent = label;
   copyNode.textContent = message;
-  elements.systemEvent.classList.remove("active");
+  elements.systemEvent.classList.remove("success", "error", "active");
+  if (tone === "success") {
+    elements.systemEvent.classList.add("success");
+  }
+  if (tone === "error") {
+    elements.systemEvent.classList.add("error");
+  }
   window.requestAnimationFrame(() => {
     elements.systemEvent.classList.add("active");
   });
 }
 
-function createDeployToken(cardId, positiveSequence) {
+function renderSequenceTrack(failedStep = null) {
+  elements.sequenceSlots.forEach((slot, index) => {
+    slot.classList.toggle("filled", index < state.progressIndex);
+    slot.classList.toggle("current", index === state.progressIndex && !state.won);
+    slot.classList.toggle("failed", failedStep === index);
+  });
+}
+
+function getSlotTarget(stepIndex) {
+  const slot = elements.sequenceSlots[stepIndex];
+  const overlayRect = elements.arenaOverlay.getBoundingClientRect();
+  const slotRect = slot.getBoundingClientRect();
+  const startX = overlayRect.width / 2;
+  const startY = overlayRect.height - 126;
+  const targetX = slotRect.left - overlayRect.left + slotRect.width / 2 - startX;
+  const targetY = slotRect.top - overlayRect.top + slotRect.height / 2 - startY;
+  return { x: targetX, y: targetY };
+}
+
+function createDeployToken(cardId, variant, stepIndex) {
   const card = cards[cardId];
   const token = document.createElement("div");
-  const target = laneTargets[state.played.length % laneTargets.length];
-  token.className = `deploy-token ${positiveSequence ? "good" : "risk"}`;
+  const isCorrect = variant === "good";
+  const target =
+    stepIndex != null ? getSlotTarget(stepIndex) : { x: 0, y: -210 };
+
+  token.className = `deploy-token ${variant}`;
   token.style.setProperty("--target-x", `${target.x}px`);
   token.style.setProperty("--target-y", `${target.y}px`);
-  token.innerHTML = `${card.name}<small>${positiveSequence ? "smooth deploy" : "recovery move"}</small>`;
+  token.innerHTML = `${card.name}<small>${isCorrect ? "action deployed" : "blocked deploy"}</small>`;
   elements.arenaOverlay.appendChild(token);
-  window.setTimeout(() => token.remove(), 3200);
+
+  if (isCorrect) {
+    window.setTimeout(() => {
+      token.classList.add("persist");
+      token.style.animation = "none";
+    }, 760);
+  } else {
+    window.setTimeout(() => token.remove(), 900);
+  }
+
+  return token;
+}
+
+function clearDeployedTokens() {
+  [...elements.arenaOverlay.querySelectorAll(".deploy-token")].forEach((token) => {
+    token.remove();
+  });
 }
 
 function spawnBlocker(reason) {
-  if (state.blockers.length >= 3) {
-    return;
-  }
-
-  const positions = [
-    { top: "28%", left: "18%" },
-    { top: "39%", left: "68%" },
-    { top: "62%", left: "28%" },
-    { top: "57%", left: "72%" },
-  ];
+  clearBlockers(true);
   const blocker = document.createElement("div");
-  const position = positions[(state.blockers.length + state.played.length) % positions.length];
   blocker.className = "blocker";
-  blocker.style.top = position.top;
-  blocker.style.left = position.left;
+  blocker.style.top = "calc(50% - 34px)";
+  blocker.style.left = "calc(50% - 34px)";
   blocker.dataset.reason = reason;
   elements.blockerLayer.appendChild(blocker);
-  state.blockers.push(blocker);
-  addLog("Blocker spawned", reason);
+  state.blockers = [blocker];
+  addLog("Blocker detected", reason);
 }
 
 function clearBlockers(immediate = false) {
   if (!state.blockers.length) {
-    return 0;
+    return;
   }
 
-  const count = state.blockers.length;
   state.blockers.forEach((blocker) => {
     if (immediate) {
       blocker.remove();
       return;
     }
-
     blocker.classList.add("clearing");
     window.setTimeout(() => blocker.remove(), 520);
   });
   state.blockers = [];
-  return count;
 }
 
-function applyMetricDelta(delta, bonus = 0) {
-  Object.entries(delta).forEach(([metric, amount]) => {
-    state.metrics[metric] = clamp(state.metrics[metric] + amount + bonus, 0, 100);
+function pulseArena(type) {
+  elements.arenaStage.classList.remove("feedback-success", "feedback-error");
+  void elements.arenaStage.offsetWidth;
+  elements.arenaStage.classList.add(
+    type === "success" ? "feedback-success" : "feedback-error"
+  );
+
+  if (type === "error") {
+    elements.arenaBoard.classList.remove("shake");
+    void elements.arenaBoard.offsetWidth;
+    elements.arenaBoard.classList.add("shake");
+  }
+
+  clearTimer("feedbackTimer");
+  state.feedbackTimer = window.setTimeout(() => {
+    elements.arenaStage.classList.remove("feedback-success", "feedback-error");
+    elements.arenaBoard.classList.remove("shake");
+    state.feedbackTimer = null;
+  }, 520);
+}
+
+function updateHud() {
+  const metrics = getMetrics();
+  const score = getStatusScore(metrics);
+  elements.energyValue.textContent = state.progressIndex;
+  elements.energyFill.style.width = `${(state.progressIndex / sequence.length) * 100}%`;
+  elements.visibilityValue.textContent = metrics.visibility;
+  elements.alignmentValue.textContent = metrics.alignment;
+  elements.flowValue.textContent = metrics.flow;
+  elements.efficiencyValue.textContent = metrics.efficiency;
+  elements.statusText.textContent = getStatusLabel(score);
+  elements.statusFill.style.width = `${score}%`;
+
+  document.body.classList.remove("status-ok", "status-risk", "status-danger");
+  if (state.won || score >= 72) {
+    document.body.classList.add("status-ok");
+  } else if (score >= 52) {
+    document.body.classList.add("status-risk");
+  } else {
+    document.body.classList.add("status-danger");
+  }
+
+  const expectedCard = sequence[state.progressIndex];
+  elements.cards.forEach((button) => {
+    const cardId = button.dataset.card;
+    const isPlaced = state.deployed.includes(cardId);
+    button.disabled = state.locked || state.won || isPlaced;
+    button.classList.toggle("spent", isPlaced);
+    button.classList.toggle("locked", state.locked || state.won || isPlaced);
+    button.classList.toggle("next-step", cardId === expectedCard && !state.won && !state.locked);
   });
+
+  renderSequenceTrack(state.failedStep);
 }
 
-function handleSequence(cardId, turnIndex) {
-  const expected = recommendedOrder[turnIndex];
-  const card = cards[cardId];
-  const onSequence = cardId === expected;
-  const priorCoverage = card.preferredAfter.every((step) => state.played.includes(step));
+function resetProgress() {
+  state.progressIndex = 0;
+  state.deployed = [];
+  state.failedStep = null;
+  clearDeployedTokens();
+  renderSequenceTrack();
+}
 
-  if (cardId === "resolve") {
-    const cleared = clearBlockers();
-    const bonus = cleared > 0 ? 6 + cleared * 2 : 0;
-    applyMetricDelta(card.metricDelta, bonus);
-    if (cleared > 0) {
-      setEvent("Blockers cleared", "Risks are identified early and followed through to resolution.");
-      addLog("Resolve Blockers", `Removed ${cleared} blocker${cleared > 1 ? "s" : ""} and restored flow.`);
-      elements.comboHint.textContent =
-        "Pressure handled well. Clearing blockers at the right moment keeps delivery moving.";
-    } else {
-      setEvent("Preventive play", card.description);
-      addLog(card.name, card.log);
-      elements.comboHint.textContent = card.combo;
-    }
-    createDeployToken(cardId, true);
-    return;
+function queueProgressReset() {
+  clearTimer("resetTimer");
+  state.locked = true;
+  updateHud();
+  state.resetTimer = window.setTimeout(() => {
+    resetProgress();
+    state.locked = false;
+    setEvent("Retry sequence", "Deploy actions to maintain system stability.");
+    elements.comboHint.textContent = "Incorrect sequence introduces blockers.";
+    updateHud();
+    state.resetTimer = null;
+  }, 900);
+}
+
+function winMatch() {
+  state.won = true;
+  clearBlockers();
+  elements.arenaStage.classList.add("match-won");
+  elements.arenaBoard.classList.add("victory");
+  setEvent(
+    "System stable",
+    "Live operations running smoothly.",
+    "success"
+  );
+  elements.comboHint.textContent = "Efficient coordination ensures smooth delivery.";
+  addLog(
+    "Match won",
+    "System stable. Live operations are running smoothly after the full deployment chain."
+  );
+  pulseArena("success");
+  updateHud();
+}
+
+function handleCorrectCard(cardId) {
+  clearTimer("resetTimer");
+  state.failedStep = null;
+  if (state.blockers.length) {
+    clearBlockers();
   }
 
-  if (onSequence && priorCoverage) {
-    applyMetricDelta(card.metricDelta, 4);
-    setEvent("Smooth deployment", card.description);
-    addLog(card.name, card.log);
-    elements.comboHint.textContent = card.combo;
-    createDeployToken(cardId, true);
-    return;
+  const slotIndex = state.progressIndex;
+  createDeployToken(cardId, "good", slotIndex);
+  state.deployed.push(cardId);
+  state.progressIndex += 1;
+
+  const isFinalStep = state.progressIndex === sequence.length;
+  const nextCard = sequence[state.progressIndex];
+
+  setEvent(
+    isFinalStep ? "Final action deployed" : "Action deployed",
+    cards[cardId].description,
+    "success"
+  );
+
+  if (cardId === "team") {
+    elements.comboHint.textContent = "Efficient coordination ensures smooth delivery.";
+  } else if (!isFinalStep && nextCard) {
+    elements.comboHint.textContent = `Next deploy: ${cards[nextCard].name}.`;
   }
 
-  applyMetricDelta(card.metricDelta, -2);
-  createDeployToken(cardId, false);
+  addLog(cards[cardId].name, cards[cardId].log);
+  pulseArena("success");
+  updateHud();
 
-  if (!priorCoverage || !onSequence) {
-    const messages = {
-      team: "Coordination landed before the full map was visible. A dependency slipped through.",
-      dashboard: "Reporting arrived before alignment settled. The numbers surfaced confusion instead of clarity.",
-      workflow: "Process changes came in before the system stabilized. Adoption friction appeared.",
-      track: "Visibility opened, but pressure is still building across the arena.",
-    };
-    const blockerReason =
-      messages[cardId] || "A sequencing gap created a blocker that now needs attention.";
-    spawnBlocker(blockerReason);
-    setEvent("System strain", blockerReason);
-    addLog(card.name, `${card.log} The timing created extra follow-up work.`);
-    elements.comboHint.textContent =
-      "You can recover by mapping the work, aligning teams, then clearing blockers before deeper improvements.";
+  if (isFinalStep) {
+    winMatch();
+  }
+}
+
+function handleWrongCard(cardId) {
+  const expectedCardId = sequence[state.progressIndex];
+  state.failedStep = state.progressIndex;
+  createDeployToken(cardId, "risk");
+  spawnBlocker("Blocker detected: dependency unresolved. Progress delayed.");
+  setEvent(
+    "Blocker detected",
+    "Incorrect sequence introduces blockers. Dependency unresolved. Progress delayed.",
+    "error"
+  );
+  elements.comboHint.textContent = "Incorrect sequence introduces blockers.";
+  addLog(
+    "Sequence broken",
+    `${cards[cardId].name} was deployed too early. Restarting the action chain from ${cards[sequence[0]].name}.`
+  );
+
+  if (navigator.vibrate) {
+    navigator.vibrate([120, 40, 120]);
+  }
+
+  pulseArena("error");
+  queueProgressReset();
+  updateHud();
+
+  if (expectedCardId) {
+    addLog("Expected next action", `The next stable play was ${cards[expectedCardId].name}.`);
   }
 }
 
 function deployCard(cardId) {
-  const card = cards[cardId];
-  if (state.played.includes(cardId) || state.energy < card.cost) {
+  if (state.locked || state.won) {
     return;
   }
 
-  state.energy -= card.cost;
-  handleSequence(cardId, state.played.length);
-  state.played.push(cardId);
-  updateHud();
-}
-
-function regenerateEnergy() {
-  if (state.energy < state.maxEnergy) {
-    state.energy += 1;
-    updateHud();
+  const expectedCardId = sequence[state.progressIndex];
+  if (cardId === expectedCardId) {
+    handleCorrectCard(cardId);
+    return;
   }
+
+  handleWrongCard(cardId);
 }
 
 function resetMatch() {
-  state.energy = 6;
-  state.metrics.visibility = 70;
-  state.metrics.alignment = 68;
-  state.metrics.flow = 66;
-  state.metrics.efficiency = 64;
-  state.played = [];
+  clearTimer("feedbackTimer");
+  clearTimer("resetTimer");
+  state.progressIndex = 0;
+  state.deployed = [];
   state.logEntries = [];
+  state.won = false;
+  state.locked = false;
+  state.failedStep = null;
+  clearDeployedTokens();
   clearBlockers(true);
-  elements.arenaOverlay.innerHTML = "";
-  setEvent(
-    "Ready to deploy",
-    "Play cards in sequence to keep delivery smooth and blockers away."
+  elements.arenaStage.classList.remove("feedback-success", "feedback-error", "match-won");
+  elements.arenaBoard.classList.remove("shake", "victory");
+  setEvent("Ready to deploy", "Deploy actions to maintain system stability.");
+  elements.comboHint.textContent = "Deploy actions to maintain system stability.";
+  addLog(
+    "Match started",
+    "Build the sequence in order. Incorrect sequence introduces blockers."
   );
-  addLog("Match started", "Project Arena is live. Establish visibility, align the team, then optimize the system.");
-  elements.comboHint.textContent =
-    "Opening with visibility and coordination creates the smoothest run.";
   updateHud();
 }
 
@@ -339,7 +435,5 @@ elements.cards.forEach((button) => {
 });
 
 elements.resetButton.addEventListener("click", resetMatch);
-
-window.setInterval(regenerateEnergy, 2800);
 
 resetMatch();

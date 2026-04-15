@@ -121,9 +121,27 @@
               <div class="system-event" id="systemEvent">
                 <div class="event-label">Ready to deploy</div>
                 <p>
-                  Play cards in sequence to keep delivery smooth and blockers
-                  away.
+                  Deploy actions to maintain system stability.
                 </p>
+              </div>
+
+              <div class="sequence-track" id="sequenceTrack">
+                <div class="sequence-slot" data-step="0">
+                  <span class="slot-order">1</span>
+                  <span class="slot-label">Track Workstreams</span>
+                </div>
+                <div class="sequence-slot" data-step="1">
+                  <span class="slot-order">2</span>
+                  <span class="slot-label">Coordinate Teams</span>
+                </div>
+                <div class="sequence-slot" data-step="2">
+                  <span class="slot-order">3</span>
+                  <span class="slot-label">Maintain Dashboards</span>
+                </div>
+                <div class="sequence-slot" data-step="3">
+                  <span class="slot-order">4</span>
+                  <span class="slot-label">Resolve Blockers</span>
+                </div>
               </div>
 
               <div class="arena-overlay" id="arenaOverlay"></div>
@@ -133,14 +151,14 @@
 
           <section class="energy-panel hud-panel">
             <div class="energy-info">
-              <span>Bandwidth</span>
-              <strong><span id="energyValue">6</span>/10</strong>
+              <span>Deployment Chain</span>
+              <strong><span id="energyValue">0</span>/4</strong>
             </div>
             <div class="energy-track">
               <div class="energy-fill" id="energyFill"></div>
             </div>
             <p id="comboHint">
-              Opening with visibility and coordination creates the smoothest run.
+              Deploy actions to maintain system stability.
             </p>
           </section>
 
@@ -153,7 +171,7 @@
             </button>
 
             <button class="arena-card active" data-card="resolve" type="button">
-              <span class="cost">3</span>
+              <span class="cost">4</span>
               <span class="card-art art-resolve"></span>
               <span class="card-name">Resolve Blockers</span>
               <span class="card-role">Clear risks and dependencies fast</span>
@@ -173,15 +191,8 @@
             <button class="arena-card active" data-card="team" type="button">
               <span class="cost">2</span>
               <span class="card-art art-team"></span>
-              <span class="card-name">Team Coordination</span>
+              <span class="card-name">Coordinate Teams</span>
               <span class="card-role">Align teams and timelines</span>
-            </button>
-
-            <button class="arena-card active" data-card="workflow" type="button">
-              <span class="cost">4</span>
-              <span class="card-art art-workflow"></span>
-              <span class="card-name">Improve Workflow</span>
-              <span class="card-role">Standardize docs and processes</span>
             </button>
           </section>
         </section>
