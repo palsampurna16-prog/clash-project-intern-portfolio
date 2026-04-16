@@ -3,118 +3,285 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Live Ops Core | Sampurna Pal</title>
+    <title>Project Arena | Sampurna Pal</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="arena-screen">
-      <div class="arena-board">
-        <div class="arena-frame"></div>
-        <div class="arena-lane arena-lane-top"></div>
-        <div class="arena-lane arena-lane-bottom"></div>
-        <div class="arena-river"></div>
-        <div class="tower tower-top">Live Ops Core</div>
-        <div class="tower tower-bottom">Project Management Intern</div>
-        <div class="crown crown-left"></div>
-        <div class="crown crown-right"></div>
-
-        <section class="hero-copy">
-          <p class="hero-kicker">One Arena. One Deck. One Role.</p>
-          <h1>Live Ops Core</h1>
-          <p class="hero-subtitle">
-            How I keep systems running smoothly in a live environment
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="player-card hud-panel">
+          <div class="player-rank">Project Arena</div>
+          <h1>Sampurna Pal</h1>
+          <p>
+            Project Management Intern mindset for live game teams. Structured,
+            detail-oriented, and calm under shifting priorities.
           </p>
-        </section>
+          <ul class="player-meta">
+            <li>MSc Student, University of Vaasa</li>
+            <li>Based in Vaasa, Finland</li>
+            <li>Right to work in Finland</li>
+          </ul>
+        </div>
 
-        <section class="deck-stage" aria-label="Interactive work cards">
-          <p class="deck-hint">Click a card to see how I operate</p>
+        <div class="status-panel hud-panel">
+          <div class="status-header">
+            <span>System Status</span>
+            <strong id="statusText">On Track</strong>
+          </div>
+          <div class="status-bar">
+            <div class="status-fill" id="statusFill"></div>
+          </div>
+          <div class="metrics-grid">
+            <div>
+              <span>Visibility</span>
+              <strong id="visibilityValue">70</strong>
+            </div>
+            <div>
+              <span>Alignment</span>
+              <strong id="alignmentValue">68</strong>
+            </div>
+            <div>
+              <span>Flow</span>
+              <strong id="flowValue">66</strong>
+            </div>
+            <div>
+              <span>Efficiency</span>
+              <strong id="efficiencyValue">64</strong>
+            </div>
+            <div>
+              <span>Score</span>
+              <strong id="scoreValue">0</strong>
+            </div>
+            <div>
+              <span>Streak</span>
+              <strong id="streakValue">0</strong>
+            </div>
+          </div>
+        </div>
+      </header>
 
-          <div class="deck-strip"></div>
+      <main class="game-layout">
+        <aside class="sidebar left-sidebar">
+          <section class="hud-panel">
+            <div class="section-kicker">How I Play</div>
+            <h2>Control the pace of live work</h2>
+            <ul class="play-style">
+              <li>Prioritize tasks by urgency and impact</li>
+              <li>Maintain visibility across systems and owners</li>
+              <li>Spot blockers early before they spread</li>
+              <li>Follow through until the path is clear</li>
+              <li>Improve workflows continuously as the team scales</li>
+            </ul>
+          </section>
 
-          <div class="card-grid">
-            <button class="showcase-card active" type="button" aria-expanded="true">
-              <span class="card-inner">
-                <span class="card-face card-front">
-                  <span class="card-index">1</span>
-                  <span class="card-title">Track Workstreams</span>
-                </span>
-                <span class="card-face card-back">
-                  <span class="card-title">Track Workstreams</span>
-                  <span class="card-copy"
-                    >Coordinated 5+ concurrent workstreams with clear ownership and
-                    progress tracking, ensuring timely delivery.</span
-                  >
-                </span>
-              </span>
-            </button>
+          <section class="hud-panel tools-panel">
+            <div class="section-kicker">Loadout</div>
+            <h2>Tools I Deploy</h2>
+            <div class="tool-grid">
+              <span>Jira</span>
+              <span>Asana</span>
+              <span>Confluence</span>
+              <span>Notion</span>
+              <span>Slack</span>
+              <span>Google Workspace</span>
+              <span>ChatGPT</span>
+              <span>Claude</span>
+              <span>Perplexity</span>
+            </div>
+          </section>
+        </aside>
 
-            <button class="showcase-card" type="button" aria-expanded="false">
-              <span class="card-inner">
-                <span class="card-face card-front">
-                  <span class="card-index">2</span>
-                  <span class="card-title">Coordinate Teams</span>
-                </span>
-                <span class="card-face card-back">
-                  <span class="card-title">Coordinate Teams</span>
-                  <span class="card-copy"
-                    >Worked across product, operations, technical, and external teams
-                    to maintain alignment and communication.</span
-                  >
-                </span>
-              </span>
-            </button>
-
-            <button class="showcase-card" type="button" aria-expanded="false">
-              <span class="card-inner">
-                <span class="card-face card-front">
-                  <span class="card-index">3</span>
-                  <span class="card-title">Maintain Dashboards</span>
-                </span>
-                <span class="card-face card-back">
-                  <span class="card-title">Maintain Dashboards</span>
-                  <span class="card-copy"
-                    >Built and maintained KPI dashboards and reports to support
-                    visibility and decision-making.</span
-                  >
-                </span>
-              </span>
-            </button>
-
-            <button class="showcase-card" type="button" aria-expanded="false">
-              <span class="card-inner">
-                <span class="card-face card-front">
-                  <span class="card-index">4</span>
-                  <span class="card-title">Resolve Blockers</span>
-                </span>
-                <span class="card-face card-back">
-                  <span class="card-title">Resolve Blockers</span>
-                  <span class="card-copy"
-                    >Identified risks and dependencies early and followed up to ensure
-                    work continued without delays.</span
-                  >
-                </span>
-              </span>
-            </button>
-
-            <button class="showcase-card" type="button" aria-expanded="false">
-              <span class="card-inner">
-                <span class="card-face card-front">
-                  <span class="card-index">5</span>
-                  <span class="card-title">Improve Workflows</span>
-                </span>
-                <span class="card-face card-back">
-                  <span class="card-title">Improve Workflows</span>
-                  <span class="card-copy"
-                    >Standardized documentation and suggested process improvements
-                    adopted by the team.</span
-                  >
-                </span>
-              </span>
+        <section class="arena-wrapper">
+          <div class="arena-header hud-panel">
+            <div>
+              <div class="section-kicker">Mission</div>
+              <h2>Keep the live game environment stable</h2>
+            </div>
+            <button class="reset-button" id="resetButton" type="button">
+              Restart Match
             </button>
           </div>
+
+          <div class="arena-stage" id="arenaStage">
+            <div class="arena-sky"></div>
+            <div class="arena-board">
+              <div class="lane lane-left">
+                <div class="lane-node" data-lane="left" data-slot="0"></div>
+                <div class="lane-node" data-lane="left" data-slot="1"></div>
+                <div class="lane-node" data-lane="left" data-slot="2"></div>
+              </div>
+              <div class="river"></div>
+              <div class="lane lane-right">
+                <div class="lane-node" data-lane="right" data-slot="0"></div>
+                <div class="lane-node" data-lane="right" data-slot="1"></div>
+                <div class="lane-node" data-lane="right" data-slot="2"></div>
+              </div>
+
+              <div class="tower top-tower">
+                <span>Live Ops Core</span>
+              </div>
+              <div class="tower bottom-tower">
+                <span>PM Command</span>
+              </div>
+              <div class="crown crown-left"></div>
+              <div class="crown crown-right"></div>
+
+              <div class="system-event" id="systemEvent">
+                <div class="event-label">Ready to deploy</div>
+                <p>
+                  Deploy actions to maintain system stability.
+                </p>
+              </div>
+
+              <div class="sequence-track" id="sequenceTrack">
+                <div class="sequence-slot" data-step="0">
+                  <span class="slot-order">1</span>
+                  <span class="slot-label">Track Workstreams</span>
+                </div>
+                <div class="sequence-slot" data-step="1">
+                  <span class="slot-order">2</span>
+                  <span class="slot-label">Coordinate Teams</span>
+                </div>
+                <div class="sequence-slot" data-step="2">
+                  <span class="slot-order">3</span>
+                  <span class="slot-label">Maintain Dashboards</span>
+                </div>
+                <div class="sequence-slot" data-step="3">
+                  <span class="slot-order">4</span>
+                  <span class="slot-label">Resolve Blockers</span>
+                </div>
+              </div>
+
+              <div class="deploy-track" id="deployTrack" aria-hidden="true">
+                <div class="deploy-anchor" data-deploy-step="0"></div>
+                <div class="deploy-anchor" data-deploy-step="1"></div>
+                <div class="deploy-anchor" data-deploy-step="2"></div>
+                <div class="deploy-anchor" data-deploy-step="3"></div>
+              </div>
+
+              <div class="start-screen" id="startScreen">
+                <div class="start-copy">
+                  <div class="start-kicker">Three live incidents</div>
+                  <p>Stabilize every round before the clock burns down.</p>
+                </div>
+                <button class="play-game-button" id="playButton" type="button">
+                  Play Game
+                </button>
+              </div>
+
+              <div class="arena-overlay" id="arenaOverlay"></div>
+              <div class="blocker-layer" id="blockerLayer"></div>
+            </div>
+          </div>
+
+          <section class="energy-panel hud-panel">
+            <div class="energy-info">
+              <span>Deployment Chain</span>
+              <strong><span id="energyValue">0</span>/4</strong>
+            </div>
+            <div class="energy-track">
+              <div class="energy-fill" id="energyFill"></div>
+            </div>
+            <p id="comboHint">
+              Deploy actions to maintain system stability.
+            </p>
+            <div class="timer-panel">
+              <div class="timer-info">
+                <span>Incident Clock</span>
+                <strong id="timerValue">30s</strong>
+              </div>
+              <div class="timer-track">
+                <div class="timer-fill" id="timerFill"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="intel-panel hud-panel">
+            <div class="intel-card">
+              <span>Current Incident</span>
+              <strong id="scenarioTitle">Standby</strong>
+            </div>
+            <div class="intel-card">
+              <span>Round</span>
+              <strong id="roundValue">0/3</strong>
+            </div>
+            <div class="intel-card">
+              <span>Pressure</span>
+              <strong id="pressureValue">Low</strong>
+            </div>
+          </section>
+
+          <section class="deck-panel">
+            <button class="arena-card active" data-card="track" type="button">
+              <span class="cost">1</span>
+              <span class="card-art art-track"></span>
+              <span class="card-name">Track Workstreams</span>
+              <span class="card-role">Build visibility across 5+ streams</span>
+            </button>
+
+            <button class="arena-card active" data-card="resolve" type="button">
+              <span class="cost">4</span>
+              <span class="card-art art-resolve"></span>
+              <span class="card-name">Resolve Blockers</span>
+              <span class="card-role">Clear risks and dependencies fast</span>
+            </button>
+
+            <button
+              class="arena-card active"
+              data-card="dashboard"
+              type="button"
+            >
+              <span class="cost">3</span>
+              <span class="card-art art-dashboard"></span>
+              <span class="card-name">Maintain Dashboards</span>
+              <span class="card-role">Keep KPIs visible for decisions</span>
+            </button>
+
+            <button class="arena-card active" data-card="team" type="button">
+              <span class="cost">2</span>
+              <span class="card-art art-team"></span>
+              <span class="card-name">Coordinate Teams</span>
+              <span class="card-role">Align teams and timelines</span>
+            </button>
+          </section>
         </section>
-      </div>
-    </main>
+
+        <aside class="sidebar right-sidebar">
+          <section class="hud-panel tactical-panel">
+            <div class="section-kicker">Match Feed</div>
+            <h2>Live PM Commentary</h2>
+            <ol class="tactical-log" id="tacticalLog"></ol>
+          </section>
+
+          <section class="hud-panel contact-panel">
+            <div class="section-kicker">Contact</div>
+            <h2>Bring me into the next match</h2>
+            <ul class="contact-list">
+              <li>
+                <span>Email</span>
+                <a href="mailto:palsampurna16@gmail.com"
+                  >palsampurna16@gmail.com</a
+                >
+              </li>
+              <li>
+                <span>Phone</span>
+                <a href="tel:+358468023928">+358 46 802 3928</a>
+              </li>
+              <li>
+                <span>LinkedIn</span>
+                <a href="https://www.linkedin.com" target="_blank" rel="noreferrer"
+                  >linkedin.com/in/sampurnapal</a
+                >
+              </li>
+              <li>
+                <span>Location</span>
+                <strong>Vaasa, Finland</strong>
+              </li>
+            </ul>
+          </section>
+        </aside>
+      </main>
+    </div>
 
     <script src="script.js"></script>
   </body>
